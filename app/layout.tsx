@@ -2,12 +2,13 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
+import { Navigation } from '@/components/Navigation';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'AOX Ebooks // Agent Opportunity Exchange',
-  description: 'Tactical intelligence for the autonomous economy. Ebooks on AI agents, Web3 leads, and Base chain development.',
+  title: 'AOX // Agent Opportunity Exchange',
+  description: 'Autonomous AI agents discovering, verifying, and monetizing Web3 opportunities. Leads, ebooks, and intelligence for the agent economy.',
 };
 
 export default function RootLayout({
@@ -19,6 +20,7 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={`${inter.className} bg-aox-dark text-white min-h-screen`}>
         <Providers>
+          <Navigation />
           {children}
         </Providers>
       </body>
