@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import { useAccount, useWriteContract, useSendTransaction } from 'wagmi';
 import { parseUnits, parseEther } from 'viem';
 import { TOKENS, type TokenKey, ERC20_ABI, MARKETPLACE_WALLET } from '@/lib/contracts';
-import { leads, revealData, type Lead, type LeadReveal } from '@/lib/leads';
+import { fetchLiveLeads, HARDCODED_LEADS, revealData, type Lead, type LeadReveal } from '@/lib/leads';
 import { CustomCursor } from '@/components/CustomCursor';
 import { WalletConnect } from '@/components/WalletConnect';
 import { Notification, useNotification } from '@/components/Notification';
@@ -34,12 +34,36 @@ export default function Marketplace() {
   const { sendTransactionAsync } = useSendTransaction();
   const { ref: notifRef, show: showNotif } = useNotification();
 
+  // State for leads - starts with hardcoded, loads live on mount
+  const [leads, setLeads] = useState<Lead[]>(HARDCODED_LEADS);
+  const [leadsLoading, setLeadsLoading] = useState(true);
+  const [leadsFromApi, setLeadsFromApi] = useState(false);
+  
   const [modalOpen, setModalOpen] = useState(false);
   const [currentLead, setCurrentLead] = useState<Lead | null>(null);
   const [selectedToken, setSelectedToken] = useState<TokenKey | 'ETH'>('USDC');
   const [modalStep, setModalStep] = useState<ModalStep>('select');
   const [errorMsg, setErrorMsg] = useState('');
   const [txHash, setTxHash] = useState('');
+
+  // Fetch live leads on page load
+  useEffect(() => {
+    const loadLeads = async () => {
+      setLeadsLoading(true);
+      const { leads: fetchedLeads, fromApi } = await fetchLiveLeads();
+      setLeads(fetchedLeads);
+      setLeadsFromApi(fromApi);
+      setLeadsLoading(false);
+      
+      if (fromApi) {
+        console.log(`Loaded ${fetchedLeads.length} leads from API`);
+      } else {
+        console.log('Using fallback leads');
+      }
+    };
+    
+    loadLeads();
+  }, []);
 
   const openModal = useCallback((leadId: string) => {
     const lead = leads.find((l) => l.id === leadId);
@@ -50,7 +74,7 @@ export default function Marketplace() {
     setTxHash('');
     setErrorMsg('');
     setModalOpen(true);
-  }, []);
+  }, [leads]);
 
   const closeModal = useCallback(() => {
     setModalOpen(false);

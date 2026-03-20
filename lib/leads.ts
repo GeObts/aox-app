@@ -13,11 +13,22 @@ export interface Lead {
   timestamp: string;
 }
 
-export const leads: Lead[] = [
+export interface RevealField {
+  label: string;
+  value: string;
+}
+
+export interface LeadReveal {
+  name: string;
+  fields: RevealField[];
+}
+
+// Fallback hardcoded leads if API fails
+export const HARDCODED_LEADS: Lead[] = [
   {
     id: 'nft-4829',
     category: 'NFT Launch',
-    title: 'NFT Collection \u2014 847 Holders',
+    title: 'NFT Collection — 847 Holders',
     desc: 'New generative art collection on Base. Deployer wallet 4yr history, $240K liquidity. 4 verified contact channels.',
     score: 86,
     price: 25,
@@ -31,7 +42,7 @@ export const leads: Lead[] = [
   {
     id: 'defi-2341',
     category: 'DeFi Protocol',
-    title: 'AMM Fork \u2014 $1.2M TVL',
+    title: 'AMM Fork — $1.2M TVL',
     desc: 'Uniswap V3 fork with custom hooks. Active GitHub, 3 contributors. Audit pending. Strong community signals.',
     score: 79,
     price: 20,
@@ -45,7 +56,7 @@ export const leads: Lead[] = [
   {
     id: 'token-9182',
     category: 'Token Launch',
-    title: 'Utility Token \u2014 12K Holders',
+    title: 'Utility Token — 12K Holders',
     desc: 'ERC-20 utility token for AI agent marketplace. Verified team, registered entity, active Discord.',
     score: 91,
     price: 50,
@@ -59,7 +70,7 @@ export const leads: Lead[] = [
   {
     id: 'dao-5571',
     category: 'Misc',
-    title: 'DAO Treasury \u2014 $340K',
+    title: 'DAO Treasury — $340K',
     desc: 'Active DAO with Gnosis Safe treasury. Snapshot governance, 234 members, weekly proposals.',
     score: 83,
     price: 30,
@@ -73,7 +84,7 @@ export const leads: Lead[] = [
   {
     id: 'nft-6634',
     category: 'NFT Launch',
-    title: 'Gaming NFT \u2014 2.3K Mints',
+    title: 'Gaming NFT — 2.3K Mints',
     desc: 'Play-to-earn gaming collection. Active Discord 4.2K members. Partnership with Base gaming guild.',
     score: 74,
     price: 20,
@@ -87,7 +98,7 @@ export const leads: Lead[] = [
   {
     id: 'defi-8812',
     category: 'DeFi Protocol',
-    title: 'Yield Optimizer \u2014 3 Strategies',
+    title: 'Yield Optimizer — 3 Strategies',
     desc: 'Auto-compounding vault across Aave, Morpho, and Lido. $2.1M deposited. Audit by Trail of Bits.',
     score: 94,
     price: 75,
@@ -101,7 +112,7 @@ export const leads: Lead[] = [
   {
     id: 'poly-1001',
     category: 'Polymarket',
-    title: 'Active Trader \u2014 $180K Volume',
+    title: 'Active Trader — $180K Volume',
     desc: 'High-volume prediction market trader. 340+ positions across political, crypto, and sports markets. Verified wallet with consistent activity.',
     score: 88,
     price: 35,
@@ -115,7 +126,7 @@ export const leads: Lead[] = [
   {
     id: 'poly-1002',
     category: 'Polymarket',
-    title: 'Market Maker \u2014 12 Active Markets',
+    title: 'Market Maker — 12 Active Markets',
     desc: 'Providing liquidity across 12 active prediction markets. Consistent profit history, automated strategies detected.',
     score: 92,
     price: 60,
@@ -128,14 +139,66 @@ export const leads: Lead[] = [
   },
 ];
 
-export interface RevealField {
-  label: string;
-  value: string;
+// Legacy export for backward compatibility
+export const leads = HARDCODED_LEADS;
+
+// API endpoint for live leads
+const API_ENDPOINT = 'http://3.142.118.148:3200/leads';
+
+// Map API lead to UI Lead format
+function mapApiLeadToLead(apiLead: any): Lead {
+  const tier = apiLead.tier?.toLowerCase() as 'standard' | 'premium' | 'enterprise' || 'standard';
+  const metadata = apiLead.metadata || {};
+  
+  // Calculate liquidity display from metadata
+  const liquidity = metadata.liquidity_usd 
+    ? `$${(metadata.liquidity_usd / 1000).toFixed(0)}K`
+    : '$10K';
+  
+  // Generate description from AI enrichment or fallback
+  const desc = apiLead.description || metadata.ai_description || `Verified ${apiLead.category} lead scored ${apiLead.score}/100 by AOX Research Agent.`;
+  
+  return {
+    id: apiLead.id,
+    category: apiLead.category,
+    title: apiLead.title,
+    desc: desc,
+    score: apiLead.score,
+    price: apiLead.price,
+    tier: tier,
+    wallet_age: metadata.wallet_age || '1 year',
+    liquidity: liquidity,
+    contacts: metadata.contact_method_count || 2,
+    chain: 'Base',
+    timestamp: 'Just listed',
+  };
 }
 
-export interface LeadReveal {
-  name: string;
-  fields: RevealField[];
+// Fetch leads from API with fallback
+export async function fetchLiveLeads(): Promise<{ leads: Lead[]; fromApi: boolean }> {
+  try {
+    const response = await fetch(API_ENDPOINT, {
+      headers: { 'Accept': 'application/json' },
+    });
+    
+    if (!response.ok) {
+      throw new Error(`API returned ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (data.listings && Array.isArray(data.listings) && data.listings.length > 0) {
+      const mappedLeads = data.listings.map(mapApiLeadToLead);
+      return { leads: mappedLeads, fromApi: true };
+    }
+    
+    console.log('No live leads available, using fallback');
+    return { leads: HARDCODED_LEADS, fromApi: false };
+    
+  } catch (error) {
+    console.error('Failed to fetch leads:', error);
+    return { leads: HARDCODED_LEADS, fromApi: false };
+  }
 }
 
 export const revealData: Record<string, LeadReveal> = {
@@ -148,7 +211,7 @@ export const revealData: Record<string, LeadReveal> = {
       { label: 'Email', value: 'team@pixelcraft.xyz' },
       { label: 'Wallet', value: '0x4a2fB8c9E1d3A7f6b0C2e5D8a1F4b7c9E2d3c891' },
       { label: 'Website', value: 'https://pixelcraft.xyz' },
-      { label: 'Notes', value: 'Deployer wallet has 4yr history. 847 unique holders. Collection minting is paused \u2014 team is preparing V2 drop with dynamic traits.' },
+      { label: 'Notes', value: 'Deployer wallet has 4yr history. 847 unique holders. Collection minting is paused — team is preparing V2 drop with dynamic traits.' },
     ],
   },
   'defi-2341': {
@@ -166,7 +229,7 @@ export const revealData: Record<string, LeadReveal> = {
   'token-9182': {
     name: 'AgentToken DAO',
     fields: [
-      { label: 'Name', value: 'AgentToken DAO \u2014 Founding Team' },
+      { label: 'Name', value: 'AgentToken DAO — Founding Team' },
       { label: 'Twitter/X', value: 'https://x.com/agenttoken_io' },
       { label: 'Farcaster', value: 'https://warpcast.com/agenttoken' },
       { label: 'Discord', value: 'https://discord.gg/agenttoken' },
@@ -206,7 +269,7 @@ export const revealData: Record<string, LeadReveal> = {
   'defi-8812': {
     name: 'YieldVault Protocol',
     fields: [
-      { label: 'Name', value: 'YieldVault Protocol \u2014 Core Team' },
+      { label: 'Name', value: 'YieldVault Protocol — Core Team' },
       { label: 'Twitter/X', value: 'https://x.com/yieldvault_base' },
       { label: 'GitHub', value: 'https://github.com/yieldvault-protocol' },
       { label: 'Email', value: 'security@yieldvault.fi' },
@@ -228,7 +291,7 @@ export const revealData: Record<string, LeadReveal> = {
   'poly-1002': {
     name: 'PredictorDAO',
     fields: [
-      { label: 'Name', value: 'PredictorDAO \u2014 Market Making Desk' },
+      { label: 'Name', value: 'PredictorDAO — Market Making Desk' },
       { label: 'Twitter/X', value: 'https://x.com/predictordao' },
       { label: 'Discord', value: 'https://discord.gg/predictordao' },
       { label: 'Telegram', value: 'https://t.me/predictordao_official' },
