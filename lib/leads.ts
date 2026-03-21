@@ -26,6 +26,21 @@ export interface LeadReveal {
 // Fallback hardcoded leads if API fails
 export const HARDCODED_LEADS: Lead[] = [
   {
+    id: 'token-sent-0x0f7cc3232c',
+    category: 'Token Launch',
+    title: 'SENT — Active DeFi Token',
+    desc: 'High-activity token on Base with strong liquidity ($155K reserve) and proven trading volume. 84 transactions from 12 unique buyers. Uniswap V2 verified pool with $80K+ FDV.',
+    score: 100,
+    price: 100,
+    tier: 'enterprise',
+    wallet_age: 'Verified',
+    liquidity: '$155,631',
+    contacts: 1,
+    chain: 'Base',
+    timestamp: '2026-03-21T23:58:00.000Z',
+  },
+
+  {
     id: 'poly-1003',
     category: 'Polymarket',
     title: 'Polymarket Whale — $64M Volume',
