@@ -75,7 +75,10 @@ export function useLeads(): UseLeadsReturn {
         }
       }
 
-      setLeads(sortByTimestamp(apiLeads));
+      // Merge: API leads + hardcoded leads (API wins on duplicate IDs)
+      const apiIdSet = new Set(apiLeads.map((l) => l.id));
+      const kept = hardcodedLeads.filter((l) => !apiIdSet.has(l.id));
+      setLeads(sortByTimestamp([...apiLeads, ...kept]));
       if (freshIds.size > 0) {
         setNewLeadIds((prev) => {
           const merged = new Set(Array.from(prev));
