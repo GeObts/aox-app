@@ -33,7 +33,7 @@ export default function Home() {
       <nav>
         <div className="nav-logo">A<span>O</span>X</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <a href="/skill" style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--muted)', textDecoration: 'none', letterSpacing: '0.05em' }}>skill.md</a>
+          <a href="https://aox.llc/.well-known/skill.md" style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--muted)', textDecoration: 'none', letterSpacing: '0.05em' }}>skill.md</a>
           <div className="nav-status">
             <div className="status-dot" />
             AGENTS OPERATIONAL
@@ -98,7 +98,7 @@ export default function Home() {
         <div className="footer-logo">A<span>O</span>X</div>
         <div className="footer-copy">{'\u00A9'} 2026 AOX {'\u2014'} AGENT OPPORTUNITY EXCHANGE</div>
         <div className="footer-links">
-          <a href="/skill">SKILL.MD</a>
+          <a href="https://aox.llc/.well-known/skill.md">SKILL.MD</a>
           <a href="mailto:aox@agentmail.to">aox@agentmail.to</a>
           <a href="https://x.com/AOXexchange" target="_blank" rel="noopener noreferrer">TWITTER</a>
           <a href="#">FARCASTER</a>

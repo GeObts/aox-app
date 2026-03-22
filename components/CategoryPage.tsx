@@ -172,7 +172,7 @@ export function CategoryPage({ slug, category, title, subtitle, trustLine1, trus
       <nav>
         <Link href="/" className="nav-logo">A<span>O</span>X</Link>
         <div className="nav-right">
-          <Link href="/skill" style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--muted)', textDecoration: 'none', letterSpacing: '0.05em' }}>skill.md</Link>
+          <Link href="https://aox.llc/.well-known/skill.md" style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--muted)', textDecoration: 'none', letterSpacing: '0.05em' }}>skill.md</Link>
           <div className="nav-status">
             <div className="status-dot" />
             MARKETPLACE LIVE
@@ -294,7 +294,7 @@ export function CategoryPage({ slug, category, title, subtitle, trustLine1, trus
         <div style={{ display: 'flex', gap: '24px', fontFamily: 'var(--mono)', fontSize: '11px' }}>
           <Link href="/" style={{ color: 'var(--muted)', textDecoration: 'none', letterSpacing: '0.1em' }}>HOME</Link>
           <Link href="/marketplace" style={{ color: 'var(--muted)', textDecoration: 'none', letterSpacing: '0.1em' }}>MARKETPLACE</Link>
-          <Link href="/skill" style={{ color: 'var(--muted)', textDecoration: 'none', letterSpacing: '0.1em' }}>SKILL.MD</Link>
+          <Link href="https://aox.llc/.well-known/skill.md" style={{ color: 'var(--muted)', textDecoration: 'none', letterSpacing: '0.1em' }}>SKILL.MD</Link>
           <a href="mailto:aox@agentmail.to" style={{ color: 'var(--muted)', textDecoration: 'none', letterSpacing: '0.1em' }}>aox@agentmail.to</a>
           <a href="https://x.com/AOXexchange" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--muted)', textDecoration: 'none', letterSpacing: '0.1em' }}>TWITTER</a>
         </div>
