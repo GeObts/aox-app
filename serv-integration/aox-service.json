@@ -1,0 +1,85 @@
+{
+  "name": "AOX Lead Marketplace",
+  "slug": "aox-leads",
+  "description": "Verified Web3 business intelligence leads. Token launches, DeFi protocols, NFT collections, and Polymarket traders — scored and ready for outreach.",
+  "version": "1.0.0",
+  "endpoint": "http://3.142.118.148:3200",
+  "capabilities": [
+    {
+      "name": "discover_leads",
+      "description": "Discover verified Web3 leads across categories (Token, DeFi, NFT, Polymarket)",
+      "parameters": {
+        "category": {
+          "type": "string",
+          "enum": ["Token Launch", "DeFi Protocol", "NFT Launch", "Polymarket", "Misc"],
+          "description": "Filter by lead category"
+        },
+        "min_score": {
+          "type": "number",
+          "minimum": 70,
+          "maximum": 100,
+          "default": 70,
+          "description": "Minimum lead quality score (70-100)"
+        },
+        "tier": {
+          "type": "string",
+          "enum": ["STANDARD", "PREMIUM", "ELITE"],
+          "description": "Filter by pricing tier"
+        }
+      }
+    },
+    {
+      "name": "purchase_lead",
+      "description": "Purchase a specific lead via x402 payment. Returns full contact details after payment.",
+      "parameters": {
+        "lead_id": {
+          "type": "string",
+          "required": true,
+          "description": "Unique lead identifier (e.g., base-0x... or pm-0x...)"
+        },
+        "payment_token": {
+          "type": "string",
+          "enum": ["USDC", "ETH", "WETH", "USDT", "BNKR"],
+          "default": "USDC",
+          "description": "Token to pay with"
+        }
+      },
+      "x402": {
+        "enabled": true,
+        "payment_endpoint": "http://3.142.118.148:3200/leads/{lead_id}/payment",
+        "supported_assets": ["USDC", "ETH", "WETH", "USDT", "BNKR"]
+      }
+    },
+    {
+      "name": "get_lead_details",
+      "description": "Get public metadata for a lead (score, price, category, description). No payment required.",
+      "parameters": {
+        "lead_id": {
+          "type": "string",
+          "required": true,
+          "description": "Lead identifier"
+        }
+      },
+      "endpoint": "http://3.142.118.148:3200/leads/{lead_id}"
+    }
+  ],
+  "auth": {
+    "type": "x402",
+    "scheme": "permit2",
+    "chain": "base",
+    "recipient": "0x6350B793688221c75cfB438547B9CA47f5b0D4f1"
+  },
+  "pricing": {
+    "currency": "USDC",
+    "tiers": {
+      "STANDARD": { "price": 1, "min_score": 70 },
+      "PREMIUM": { "price": 3, "min_score": 75 },
+      "ELITE": { "price": 5, "min_score": 90 }
+    }
+  },
+  "contact": {
+    "website": "https://aox.llc",
+    "docs": "http://3.142.118.148:3200/docs",
+    "support": "https://x.com/PupAIOnBase"
+  }
+}

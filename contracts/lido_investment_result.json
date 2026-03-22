@@ -1,0 +1,9 @@
+{
+  "timestamp": "2026-03-20T21:36:39.311Z",
+  "ethInvested": "0.0011",
+  "wstethReceived": "0.000894386575038754",
+  "treasuryBalance": "0.001707466807857055",
+  "swapTx": "0x048fe5af8aac5d4a65a4f626424bf6c67fff2e538c6b38ee8e6bc705e9b762b2",
+  "depositTx": "0x70c743341467a0df8372a400d619249b643a37847c6b871f906fd0d826d3b339",
+  "status": "success"
+}

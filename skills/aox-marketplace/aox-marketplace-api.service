@@ -1,0 +1,16 @@
+[Unit]
+Description=AOX Marketplace API Server
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/.openclaw/workspace/skills/aox-marketplace
+ExecStart=/usr/bin/node api_server.js
+Restart=always
+RestartSec=10
+Environment=HOME=/home/ubuntu
+Environment=MARKETPLACE_API_PORT=3200
+
+[Install]
+WantedBy=multi-user.target

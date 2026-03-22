@@ -1,6 +1,6 @@
 import { parseAbi } from 'viem';
 
-export const MARKETPLACE_WALLET = '0x2Fc8F99B6b503DD7BC4e0a31d7E81DfA04e521fB';
+export const MARKETPLACE_WALLET = '0x729174D90CA93139E3E9590993910B784eD32282';
 
 export const TOKENS = {
   USDC: {

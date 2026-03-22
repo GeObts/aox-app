@@ -1,0 +1,41 @@
+{
+  "name": "AOX Research Agent",
+  "version": "1.0.0",
+  "description": "Discovers token launches on Base and Polymarket traders",
+  "model": "venice/llama-3.3-70b",
+  "wallet": {
+    "address": "0xeb8C80924F8Bdf6792886d6c9E29Fdb7E93F82c4",
+    "chain": "base",
+    "network": "mainnet"
+  },
+  "capabilities": [
+    "token_discovery",
+    "polymarket_scanning",
+    "lead_enrichment",
+    "venice_ai_enrichment"
+  ],
+  "scanners": [
+    {
+      "name": "token_launch",
+      "script": "scanner.py",
+      "schedule": "*/15 * * * *",
+      "description": "Scan Base for new ERC-20 token launches every 15 minutes"
+    },
+    {
+      "name": "polymarket_trader",
+      "script": "polymarket_scanner.py",
+      "schedule": "0 6 * * *",
+      "description": "Scan Polymarket for top traders daily at 6am UTC"
+    }
+  ],
+  "output": {
+    "directory": "~/.openclaw/agents/marketplace/input",
+    "format": "*_public.json"
+  },
+  "env_file": "~/.openclaw/.env",
+  "erc8004": {
+    "registered": false,
+    "agentId": null,
+    "txHash": null
+  }
+}

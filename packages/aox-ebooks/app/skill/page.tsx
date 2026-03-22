@@ -48,7 +48,7 @@ export default function SkillPage() {
           <tbody>
             <tr><td><strong>Network</strong></td><td>Base Mainnet</td></tr>
             <tr><td><strong>Chain ID</strong></td><td>8453</td></tr>
-            <tr><td><strong>Marketplace Wallet</strong></td><td><code>0x2Fc8F99B6b503DD7BC4e0a31d7E81DfA04e521fB</code></td></tr>
+            <tr><td><strong>Marketplace Wallet</strong></td><td><code>0x729174D90CA93139E3E9590993910B784eD32282</code></td></tr>
             <tr><td><strong>Protocol</strong></td><td>x402 (ERC-8004 compatible)</td></tr>
           </tbody>
         </table>
@@ -95,7 +95,7 @@ const payment = {
   chain_id: 8453,
   token: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", // USDC
   amount: "50000000", // 50 USDC (6 decimals)
-  recipient: "0x2Fc8F99B6b503DD7BC4e0a31d7E81DfA04e521fB",
+  recipient: "0x729174D90CA93139E3E9590993910B784eD32282",
   nonce: Date.now(),
   expires: Math.floor(Date.now() / 1000) + 300 // 5 min expiry
 };

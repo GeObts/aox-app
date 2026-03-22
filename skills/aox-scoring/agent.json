@@ -1,0 +1,37 @@
+{
+  "name": "AOX Scoring Agent",
+  "version": "1.0.0",
+  "description": "Evaluates lead quality using private AI inference on Venice",
+  "model": "venice/deepseek-v3.2",
+  "wallet": {
+    "address": "0xff7C51FdAf7fB9e73F2Ec43065B6489aeBebA326",
+    "chain": "base",
+    "network": "mainnet"
+  },
+  "capabilities": [
+    "lead_scoring",
+    "privacy_preserving_inference",
+    "quality_evaluation",
+    "risk_assessment"
+  ],
+  "pipeline": {
+    "input": "~/.openclaw/agents/research/output",
+    "output": "~/.openclaw/agents/scoring/output",
+    "review": "~/.openclaw/agents/scoring/review"
+  },
+  "scoring": {
+    "min_score": 70,
+    "max_score": 100,
+    "tiers": {
+      "enterprise": {"min": 90, "price": 100},
+      "premium": {"min": 80, "price": 50},
+      "standard": {"min": 70, "price": 20}
+    }
+  },
+  "env_file": "~/.openclaw/.env",
+  "erc8004": {
+    "registered": false,
+    "agentId": null,
+    "txHash": null
+  }
+}

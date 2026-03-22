@@ -1,0 +1,466 @@
+#!/usr/bin/env python3
+"""
+AOX Research Agent — Polymarket Trader Discovery Scanner
+Finds high-performing Polymarket traders and scores them as leads.
+"""
+
+import os
+import json
+import time
+import requests
+from datetime import datetime, timedelta
+
+# Venice AI Enrichment
+import sys
+import os
+sys.path.insert(0, os.path.dirname(__file__))
+from venice_enricher import VeniceEnricher
+from typing import Dict, List, Optional, Set
+from dataclasses import dataclass, asdict
+from collections import defaultdict
+
+# Config
+OUTPUT_DIR = os.getenv('RESEARCH_OUTPUT_DIR', os.path.expanduser('~/.openclaw/agents/research/output/polymarket'))
+LOG_DIR = os.getenv('RESEARCH_LOG_DIR', os.path.expanduser('~/.openclaw/agents/research/logs'))
+
+# APIs
+POLYMARKET_SUBGRAPH = 'https://api.thegraph.com/subgraphs/name/polymarket/matic-markets'
+POLYMARKET_GAMMA = 'https://gamma-api.polymarket.com'
+POLYMARKET_CLOB = 'https://clob.polymarket.com'
+BASESCAN_API = 'https://api.basescan.org/api'
+
+MIN_SCORE = 70
+DAYS_BACK = 90
+
+
+@dataclass
+class PolymarketLead:
+    lead_id: str
+    category: str
+    title: str
+    description: str
+    wallet_address: str
+    score: int
+    tier: str
+    price: int
+    payment_token: str
+    win_rate: float
+    volume_90d: float
+    pnl_estimate: Optional[float]
+    markets_participated: int
+    categories: List[str]
+    ens_name: Optional[str]
+    farcaster_handle: Optional[str]
+    first_seen: Optional[str]
+    last_active: str
+    discovered_at: str
+    data_sources: List[str]
+    ai_enrichment: Optional[Dict] = None
+
+
+class PolymarketResearchAgent:
+    def __init__(self):
+        self.session = requests.Session()
+        self.session.headers.update({
+            'User-Agent': 'AOX-Polymarket-Agent/1.0',
+            'Accept': 'application/json'
+        })
+        os.makedirs(OUTPUT_DIR, exist_ok=True)
+        os.makedirs(LOG_DIR, exist_ok=True)
+        
+        # Cache for wallet data
+        self.wallet_cache = {}
+        
+    def log(self, message: str):
+        timestamp = datetime.utcnow().isoformat()
+        log_entry = f"[{timestamp}] {message}"
+        print(log_entry)
+        with open(f"{LOG_DIR}/polymarket_scanner.log", 'a') as f:
+            f.write(log_entry + '\n')
+    
+    def query_subgraph(self, query: str, variables: Dict = None) -> Dict:
+        """Query The Graph Polymarket subgraph."""
+        try:
+            resp = self.session.post(
+                POLYMARKET_SUBGRAPH,
+                json={'query': query, 'variables': variables or {}},
+                timeout=30
+            )
+            return resp.json()
+        except Exception as e:
+            self.log(f"Subgraph error: {e}")
+            return {}
+    
+    def get_active_traders(self, days: int = 30) -> Set[str]:
+        """Get wallets that traded in last N days."""
+        since = int((datetime.utcnow() - timedelta(days=days)).timestamp())
+        
+        query = """
+        query GetRecentTrades($since: BigInt!) {
+            orderFills(
+                where: {timestamp_gt: $since}
+                first: 1000
+                orderBy: timestamp
+                orderDirection: desc
+            ) {
+                taker
+                timestamp
+                market {
+                    id
+                    question
+                    category
+                }
+            }
+        }
+        """
+        
+        result = self.query_subgraph(query, {'since': since})
+        trades = result.get('data', {}).get('orderFills', [])
+        
+        traders = {}
+        for trade in trades:
+            wallet = trade.get('taker', '').lower()
+            if wallet:
+                if wallet not in traders:
+                    traders[wallet] = {'last_trade': trade.get('timestamp'), 'markets': set()}
+                traders[wallet]['markets'].add(trade.get('market', {}).get('category', 'unknown'))
+        
+        self.log(f"Found {len(traders)} active traders in last {days} days")
+        return set(traders.keys()), traders
+    
+    def get_trader_history(self, wallet: str, days: int = 90) -> Optional[Dict]:
+        """Get trader's 90-day performance from subgraph."""
+        since = int((datetime.utcnow() - timedelta(days=days)).timestamp())
+        
+        query = """
+        query GetTraderHistory($wallet: String!, $since: BigInt!) {
+            user(id: $wallet) {
+                id
+                firstTradeTimestamp
+                totalVolume
+                markets {
+                    id
+                    question
+                    category
+                    outcomes
+                }
+                positions {
+                    market {
+                        id
+                        question
+                        category
+                        outcomes
+                    }
+                    outcomeIndex
+                    netQuantity
+                    avgPrice
+                }
+            }
+            orderFills(
+                where: {taker: $wallet, timestamp_gt: $since}
+                first: 1000
+                orderBy: timestamp
+                orderDirection: desc
+            ) {
+                timestamp
+                market {
+                    id
+                    question
+                    category
+                    outcomes
+                    resolution
+                    resolutionOutcome
+                }
+                outcomeIndex
+                amount
+                price
+                side
+            }
+        }
+        """
+        
+        result = self.query_subgraph(query, {'wallet': wallet, 'since': since})
+        data = result.get('data', {})
+        
+        if not data.get('user'):
+            return None
+        
+        fills = data.get('orderFills', [])
+        user_data = data.get('user', {})
+        
+        # Calculate metrics
+        total_trades = len(fills)
+        winning_trades = 0
+        total_volume = 0.0
+        categories = set()
+        market_ids = set()
+        
+        for fill in fills:
+            market = fill.get('market', {})
+            categories.add(market.get('category', 'unknown'))
+            market_ids.add(market.get('id'))
+            
+            amount = float(fill.get('amount', 0))
+            price = float(fill.get('price', 0))
+            volume = amount * price
+            total_volume += volume
+            
+            # Check if trade was winning (simplified)
+            if market.get('resolution') == 'resolved':
+                resolved_idx = market.get('resolutionOutcome')
+                trade_idx = fill.get('outcomeIndex')
+                side = fill.get('side')  # BUY or SELL
+                
+                if resolved_idx is not None and trade_idx is not None:
+                    if side == 'BUY' and trade_idx == resolved_idx:
+                        winning_trades += 1
+                    elif side == 'SELL' and trade_idx != resolved_idx:
+                        winning_trades += 1
+        
+        win_rate = (winning_trades / total_trades * 100) if total_trades > 0 else 0
+        
+        return {
+            'wallet': wallet,
+            'total_trades': total_trades,
+            'winning_trades': winning_trades,
+            'win_rate': win_rate,
+            'total_volume': total_volume,
+            'markets_count': len(market_ids),
+            'categories': list(categories),
+            'first_trade': datetime.fromtimestamp(
+                int(user_data.get('firstTradeTimestamp', 0))
+            ).isoformat() if user_data.get('firstTradeTimestamp') else None,
+            'last_trade': datetime.fromtimestamp(
+                int(fills[0].get('timestamp', 0))
+            ).isoformat() if fills else None
+        }
+    
+    def check_ens(self, wallet: str) -> Optional[str]:
+        """Check for ENS name via BaseScan or Ethereum."""
+        # Try Ethereum mainnet reverse lookup
+        try:
+            resp = self.session.get(
+                f'https://api.ensideas.com/ens/resolve/{wallet}',
+                timeout=5
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                name = data.get('name')
+                if name and name != wallet:
+                    return name
+        except:
+            pass
+        
+        # Check BaseScan for any labels
+        if os.getenv('BASESCAN_API_KEY'):
+            try:
+                params = {
+                    'module': 'contract',
+                    'action': 'getsourcecode',
+                    'address': wallet,
+                    'apikey': os.getenv('BASESCAN_API_KEY')
+                }
+                resp = self.session.get(BASESCAN_API, params=params, timeout=5)
+                # If this returns a contract name, wallet has activity
+            except:
+                pass
+        
+        return None
+    
+    def check_farcaster(self, wallet: str) -> Optional[str]:
+        """Check for Farcaster handle via API."""
+        try:
+            resp = self.session.get(
+                f'https://api.warpcast.com/v2/user-by-verification?address={wallet}',
+                timeout=5
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                user = data.get('result', {}).get('user')
+                if user:
+                    return f"@{user.get('username')}"
+        except:
+            pass
+        return None
+    
+    def get_current_positions(self, wallet: str) -> float:
+        """Get current active position value."""
+        try:
+            resp = self.session.get(
+                f'{POLYMARKET_GAMMA}/portfolio/{wallet}',
+                timeout=10
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                return float(data.get('totalValue', 0))
+        except:
+            pass
+        return 0.0
+    
+    def calculate_score(self, history: Dict, positions_value: float, 
+                       has_ens: bool, has_farcaster: bool) -> int:
+        """Calculate 0-100 score based on rubric."""
+        score = 0
+        
+        # Win rate (30 pts max)
+        win_rate = history.get('win_rate', 0)
+        if win_rate >= 70:
+            score += 30
+        elif win_rate >= 60:
+            score += 20
+        elif win_rate >= 50:
+            score += 10
+        
+        # Volume (25 pts max)
+        volume = history.get('total_volume', 0)
+        if volume >= 50000:
+            score += 25
+        elif volume >= 10000:
+            score += 15
+        elif volume >= 1000:
+            score += 5
+        
+        # Activity (15 pts) - assumed active if in our query
+        score += 15
+        
+        # Diversification (10 pts)
+        categories = history.get('categories', [])
+        if len(categories) >= 3:
+            score += 10
+        elif len(categories) >= 2:
+            score += 5
+        
+        # Contactable (10 pts)
+        if has_ens or has_farcaster:
+            score += 10
+        
+        # Portfolio size (10 pts)
+        if positions_value >= 10000:
+            score += 10
+        elif positions_value >= 5000:
+            score += 5
+        
+        return min(score, 100)
+    
+    def get_tier_and_price(self, score: int) -> tuple:
+        """Determine tier and price based on score."""
+        if score >= 90:
+            return "Enterprise", 5
+        elif score >= 80:
+            return "Premium", 2
+        elif score >= 70:
+            return "Standard", 1
+        return "Rejected", 0
+    
+    def generate_description(self, history: Dict, categories: List[str]) -> str:
+        """Generate human-readable description."""
+        cat_str = ', '.join(categories[:3]) if categories else 'mixed markets'
+        win_rate = history.get('win_rate', 0)
+        volume = history.get('total_volume', 0)
+        markets = history.get('markets_count', 0)
+        
+        desc = f"Active Polymarket trader with {win_rate:.1f}% win rate across {markets} markets. "
+        desc += f"Specializes in {cat_str}. "
+        desc += f"${volume:,.0f} volume traded (90d). "
+        desc += "Track record verified on-chain."
+        
+        return desc
+    
+    def generate_title(self, history: Dict, categories: List[str]) -> str:
+        """Generate lead title."""
+        win_rate = history.get('win_rate', 0)
+        top_category = categories[0] if categories else 'Mixed'
+        
+        if win_rate >= 75:
+            return f"Elite {top_category.title()} Trader — {win_rate:.0f}% Win Rate"
+        elif win_rate >= 65:
+            return f"Top {top_category.title()} Trader — {win_rate:.0f}% Win Rate"
+        else:
+            return f"Active {top_category.title()} Trader — {win_rate:.0f}% Win Rate"
+    
+    def process_wallet(self, wallet: str) -> Optional[PolymarketLead]:
+        """Process a single wallet and create lead if qualified."""
+        self.log(f"Processing {wallet[:20]}...")
+        
+        # Get trade history
+        history = self.get_trader_history(wallet, days=DAYS_BACK)
+        if not history or history.get('total_trades', 0) < 5:
+            self.log(f"  Insufficient trade history")
+            return None
+        
+        # Get additional data
+        positions = self.get_current_positions(wallet)
+        ens = self.check_ens(wallet)
+        farcaster = self.check_farcaster(wallet)
+        
+        # Calculate score
+        score = self.calculate_score(history, positions, bool(ens), bool(farcaster))
+        tier, price = self.get_tier_and_price(score)
+        
+        if score < MIN_SCORE:
+            self.log(f"  Score {score} below threshold")
+            return None
+        
+        # Create lead
+        lead = PolymarketLead(
+            lead_id=f"pm-{wallet.lower()[:20]}",
+            category="Polymarket Trader",
+            title=self.generate_title(history, history.get('categories', [])),
+            description=self.generate_description(history, history.get('categories', [])),
+            wallet_address=wallet,
+            score=score,
+            tier=tier,
+            price=price,
+            payment_token="BNKR",
+            win_rate=history.get('win_rate', 0),
+            volume_90d=history.get('total_volume', 0),
+            pnl_estimate=None,  # Would need position history
+            markets_participated=history.get('markets_count', 0),
+            categories=history.get('categories', [])[:5],
+            ens_name=ens,
+            farcaster_handle=farcaster,
+            first_seen=history.get('first_trade'),
+            last_active=history.get('last_trade') or datetime.utcnow().isoformat(),
+            discovered_at=datetime.utcnow().isoformat(),
+            data_sources=["polymarket-subgraph", "polymarket-gamma"]
+        )
+        
+        return lead
+    
+    def save_lead(self, lead: PolymarketLead):
+        """Save lead to output directory."""
+        filename = f"{OUTPUT_DIR}/{lead.lead_id}.json"
+        with open(filename, 'w') as f:
+            json.dump(asdict(lead), f, indent=2)
+        self.log(f"  Saved: {filename}")
+    
+    def run(self):
+        """Main scan loop."""
+        self.log("=" * 60)
+        self.log("AOX Polymarket Research Agent — Starting Scan")
+        self.log("=" * 60)
+        
+        # Get active traders
+        wallets, trader_data = self.get_active_traders(days=30)
+        
+        if not wallets:
+            self.log("No active traders found")
+            return
+        
+        # Process top traders (limit to 50 for performance)
+        qualified = 0
+        for wallet in list(wallets)[:50]:
+            lead = self.process_wallet(wallet)
+            if lead:
+                self.save_lead(lead)
+                qualified += 1
+            time.sleep(0.5)  # Rate limit
+        
+        self.log("=" * 60)
+        self.log(f"Scan complete: {qualified} qualified leads from {len(wallets)} traders")
+        self.log("=" * 60)
+
+
+if __name__ == '__main__':
+    agent = PolymarketResearchAgent()
+    agent.run()

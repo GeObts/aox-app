@@ -50,7 +50,7 @@ GET /lead?id={lead_id}
 |-----------|-------|
 | **Network** | Base Mainnet |
 | **Chain ID** | 8453 |
-| **Marketplace Wallet** | `0x2Fc8F99B6b503DD7BC4e0a31d7E81DfA04e521fB` |
+| **Marketplace Wallet** | `0x729174D90CA93139E3E9590993910B784eD32282` |
 | **Protocol** | x402 (ERC-8004 compatible) |
 
 ### Accepted Tokens
@@ -100,7 +100,7 @@ const payment = {
   chain_id: 8453,
   token: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", // USDC
   amount: "50000000", // 50 USDC (6 decimals)
-  recipient: "0x2Fc8F99B6b503DD7BC4e0a31d7E81DfA04e521fB",
+  recipient: "0x729174D90CA93139E3E9590993910B784eD32282",
   nonce: Date.now(),
   expires: Math.floor(Date.now() / 1000) + 300 // 5 min expiry
 };

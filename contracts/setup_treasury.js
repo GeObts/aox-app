@@ -24,39 +24,69 @@ async function main() {
     const abi = JSON.parse(fs.readFileSync('AgentTreasury.abi', 'utf8'));
     const contract = new ethers.Contract(CONTRACT_ADDR, abi, wallet);
     
-    console.log('Setting up AgentTreasury...');
+    console.log('AgentTreasury Setup');
     console.log('Contract:', CONTRACT_ADDR);
     console.log('Owner:', await contract.owner());
     
-    // Add wstETH as supported
-    console.log('\nAdding wstETH as supported token...');
-    const tx1 = await contract.addSupportedToken(WSTETH, { gasLimit: 100000 });
-    await tx1.wait();
-    console.log('✅ wstETH added');
-    
     // Check wstETH balance
-    const wstethAbi = ['function balanceOf(address) view returns (uint256)', 'function approve(address,uint256) returns (bool)'];
+    const wstethAbi = [
+        'function balanceOf(address) view returns (uint256)',
+        'function approve(address,uint256) returns (bool)',
+        'function allowance(address,address) view returns (uint256)'
+    ];
     const wsteth = new ethers.Contract(WSTETH, wstethAbi, wallet);
     const balance = await wsteth.balanceOf(wallet.address);
     console.log(`\nBanker wstETH balance: ${ethers.utils.formatUnits(balance, 18)}`);
     
-    if (balance > 0) {
-        console.log('Approving treasury to spend wstETH...');
-        const tx2 = await wsteth.approve(CONTRACT_ADDR, balance, { gasLimit: 100000 });
-        await tx2.wait();
-        console.log('✅ Approved');
-        
-        console.log('Depositing wstETH to treasury...');
-        const tx3 = await contract.deposit(WSTETH, balance, { gasLimit: 200000 });
-        await tx3.wait();
-        console.log('✅ Deposited');
-        
-        const treasuryBalance = await contract.getContractBalance(WSTETH);
-        console.log(`Treasury wstETH: ${ethers.utils.formatUnits(treasuryBalance, 18)}`);
+    if (balance.eq(0)) {
+        console.log('No wstETH to deposit');
+        return;
     }
     
-    console.log('\n✅ Setup complete!');
-    console.log('Treasury is ready for deposits.');
+    // Check if already approved
+    const allowance = await wsteth.allowance(wallet.address, CONTRACT_ADDR);
+    console.log(`Allowance: ${ethers.utils.formatUnits(allowance, 18)}`);
+    
+    if (allowance.lt(balance)) {
+        console.log('Approving wstETH...');
+        const approveTx = await wsteth.approve(CONTRACT_ADDR, balance, {
+            gasLimit: 100000,
+            maxFeePerGas: ethers.utils.parseUnits('0.1', 'gwei'),
+            maxPriorityFeePerGas: ethers.utils.parseUnits('0.01', 'gwei')
+        });
+        await approveTx.wait();
+        console.log('✅ Approved:', approveTx.hash);
+    }
+    
+    // Deposit with manual gas price to avoid conflicts
+    console.log(`\nDepositing ${ethers.utils.formatUnits(balance, 18)} wstETH...`);
+    const depositTx = await contract.deposit(WSTETH, balance, {
+        gasLimit: 200000,
+        maxFeePerGas: ethers.utils.parseUnits('0.1', 'gwei'),
+        maxPriorityFeePerGas: ethers.utils.parseUnits('0.01', 'gwei')
+    });
+    
+    console.log('Transaction:', depositTx.hash);
+    console.log('Waiting...');
+    
+    const receipt = await depositTx.wait();
+    console.log(`\n✅ Deposited in block ${receipt.blockNumber}`);
+    
+    const treasuryBalance = await contract.getContractBalance(WSTETH);
+    console.log(`Treasury wstETH: ${ethers.utils.formatUnits(treasuryBalance, 18)}`);
+    
+    console.log(`\nBaseScan: https://basescan.org/tx/${depositTx.hash}`);
+    
+    // Save result
+    fs.writeFileSync('deposit_result.json', JSON.stringify({
+        timestamp: new Date().toISOString(),
+        amount: ethers.utils.formatUnits(balance, 18),
+        txHash: depositTx.hash,
+        block: receipt.blockNumber
+    }, null, 2));
 }
 
-main().catch(console.error);
+main().catch(err => {
+    console.error('Error:', err.message);
+    process.exit(1);
+});

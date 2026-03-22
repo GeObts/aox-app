@@ -1,0 +1,16 @@
+✅ AOX Marketplace API running on port 3200
+📁 Serving: /home/ubuntu/.openclaw/agents/marketplace/output/listings.json
+🌐 CORS allowed origins:
+   - https://aox.llc
+   - https://www.aox.llc
+   - https://aox-app.vercel.app
+   - https://aox-ebooks.vercel.app
+   - http://localhost:3000
+   - http://localhost:3001
+
+Endpoints:
+  GET  http://your-ec2-ip:3200/health
+  GET  http://your-ec2-ip:3200/leads
+  GET  http://your-ec2-ip:3200/leads/<id>
+  POST http://your-ec2-ip:3200/webhook/new-lead
+Shutting down...

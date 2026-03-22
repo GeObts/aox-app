@@ -1,0 +1,22 @@
+{
+  "lead_id": "pm-0x742d35cc6c7c3c7c7c7c",
+  "category": "Polymarket Trader",
+  "title": "Elite Crypto Politics Trader — 78% Win Rate",
+  "description": "Active Polymarket trader with 78.5% win rate across 23 markets. Specializes in crypto, politics. $45,230 volume traded (90d). Track record verified on-chain.",
+  "wallet_address": "0x742d35Cc6C7c3C7c7c7c7c7c7c7c7c7c7c7c7c7",
+  "score": 84,
+  "tier": "Premium",
+  "price": 2,
+  "payment_token": "BNKR",
+  "win_rate": 78.5,
+  "volume_90d": 45230.50,
+  "pnl_estimate": 8750.25,
+  "markets_participated": 23,
+  "categories": ["crypto", "politics", "sports"],
+  "ens_name": "predictor.eth",
+  "farcaster_handle": "@toptrader",
+  "first_seen": "2025-06-15T00:00:00Z",
+  "last_active": "2026-03-18T14:30:00Z",
+  "discovered_at": "2026-03-19T06:00:00Z",
+  "data_sources": ["polymarket-subgraph", "polymarket-gamma"]
+}

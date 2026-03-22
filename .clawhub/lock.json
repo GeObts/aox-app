@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "skills": {
+    "sonoscli": {
+      "version": "1.0.0",
+      "installedAt": 1773523926631
+    },
+    "memory-setup-openclaw": {
+      "version": "1.0.0",
+      "installedAt": 1773527844640
+    },
+    "qmd": {
+      "version": "1.0.0",
+      "installedAt": 1773528616356
+    },
+    "xiucheng-self-improving-agent": {
+      "version": "1.0.0",
+      "installedAt": 1773528901336
+    },
+    "github-ops": {
+      "version": "1.0.0",
+      "installedAt": 1773534386911
+    },
+    "ai-humanizer": {
+      "version": "2.1.0",
+      "installedAt": 1773595921944
+    },
+    "ethskills": {
+      "version": "1.0.0",
+      "installedAt": 1773717774027
+    }
+  }
+}
