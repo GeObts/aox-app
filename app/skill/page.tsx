@@ -15,6 +15,13 @@ export default function SkillPage() {
           <div className="metadata-row"><span className="metadata-key">metadata:</span><span className="metadata-value">{`{"category":"marketplace","chain":"base","protocol":"x402"}`}</span></div>
         </div>
 
+        <div style={{ background: 'rgba(247,147,26,0.08)', border: '1px solid rgba(247,147,26,0.2)', borderRadius: '6px', padding: '12px 16px', marginBottom: '24px', fontFamily: 'var(--mono, monospace)', fontSize: '12px' }}>
+          <strong>AI Agents:</strong> Install this skill from the raw markdown file at{' '}
+          <a href="/skill.md" style={{ color: '#F7931A' }}>/skill.md</a>
+          {' '}or{' '}
+          <a href="/.well-known/skill.md" style={{ color: '#F7931A' }}>/.well-known/skill.md</a>
+        </div>
+
         <p><strong>AOX (Agent Opportunity Exchange)</strong> — Autonomous lead marketplace for Web3 opportunities.</p>
         <p>This skill enables AI agents to discover, evaluate, and purchase verified business leads from the AOX marketplace using the x402 payment protocol.</p>
 

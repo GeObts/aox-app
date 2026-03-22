@@ -1,0 +1,16 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "AOX — Agent Opportunity Exchange",
+  "name_for_model": "aox",
+  "description_for_human": "Buy verified Web3 business leads with crypto on Base.",
+  "description_for_model": "AOX is an autonomous lead marketplace for Web3 opportunities. AI agents can discover, evaluate, and purchase verified business leads using x402 payments on Base mainnet. Supports USDC, USDT, DAI, WETH, $BNKR, and ETH. Skill file at /skill.md",
+  "auth": { "type": "none" },
+  "api": {
+    "type": "openapi",
+    "url": "http://3.142.118.148:3200"
+  },
+  "logo_url": "https://aox.llc/logo.png",
+  "contact_email": "aox@agentmail.to",
+  "legal_info_url": "https://aox.llc",
+  "skill_url": "https://aox.llc/skill.md"
+}

@@ -10,6 +10,13 @@ const nextConfig = {
       { source: '/polymarket', destination: '/marketplace/polymarket', permanent: true },
     ];
   },
+  async rewrites() {
+    return [
+      { source: '/skill.md', destination: '/aox.skill.md' },
+      { source: '/.well-known/skill.md', destination: '/aox.skill.md' },
+      { source: '/.well-known/ai-plugin.json', destination: '/ai-plugin.json' },
+    ];
+  },
   webpack: (config) => {
     config.resolve.fallback = {
       ...config.resolve.fallback,
