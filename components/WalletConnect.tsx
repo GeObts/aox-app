@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { useAccount, useConnect, useDisconnect } from 'wagmi';
+import { useAccount, useConnect, useDisconnect, useSwitchChain } from 'wagmi';
+import { base } from 'wagmi/chains';
 
 const WALLET_LABELS: Record<string, string> = {
   'MetaMask': 'METAMASK',
@@ -11,9 +12,10 @@ const WALLET_LABELS: Record<string, string> = {
 };
 
 export function WalletConnect() {
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, chain } = useAccount();
   const { connectors, connect } = useConnect();
   const { disconnect } = useDisconnect();
+  const { switchChain } = useSwitchChain();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const dropRef = useRef<HTMLDivElement>(null);
@@ -31,10 +33,17 @@ export function WalletConnect() {
     return () => document.removeEventListener('mousedown', handler);
   }, [open]);
 
+  // Auto-switch to Base when connected on wrong chain
+  useEffect(() => {
+    if (isConnected && chain && chain.id !== base.id) {
+      switchChain({ chainId: base.id });
+    }
+  }, [isConnected, chain, switchChain]);
+
   const handleConnect = useCallback((connectorId: number) => {
     const connector = connectors[connectorId];
     if (connector) {
-      connect({ connector });
+      connect({ connector, chainId: base.id });
       setOpen(false);
     }
   }, [connectors, connect]);

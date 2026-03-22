@@ -2,7 +2,8 @@
 
 import { useState, useCallback } from 'react';
 import Link from 'next/link';
-import { useAccount, useWriteContract, useSendTransaction } from 'wagmi';
+import { useAccount, useWriteContract, useSendTransaction, useSwitchChain } from 'wagmi';
+import { base } from 'wagmi/chains';
 import { parseUnits, parseEther } from 'viem';
 import { TOKENS, type TokenKey, ERC20_ABI, MARKETPLACE_WALLET } from '@/lib/contracts';
 import { revealData, type Lead, type LeadReveal } from '@/lib/leads';
@@ -51,9 +52,10 @@ const FILTER_TABS = [
 ];
 
 export function CategoryPage({ slug, category, title, subtitle, trustLine1, trustLine2 }: CategoryPageProps) {
-  const { isConnected } = useAccount();
+  const { isConnected, chain } = useAccount();
   const { writeContractAsync } = useWriteContract();
   const { sendTransactionAsync } = useSendTransaction();
+  const { switchChainAsync } = useSwitchChain();
   const { ref: notifRef, show: showNotif } = useNotification();
   const { leads, newLeadIds, clearNewFlag } = useLeads();
   const filtered = leads.filter((l) => l.category === category);
@@ -87,6 +89,17 @@ export function CategoryPage({ slug, category, title, subtitle, trustLine1, trus
       showNotif('// connect wallet first', true);
       return;
     }
+
+    // Ensure wallet is on Base
+    if (chain?.id !== base.id) {
+      try {
+        await switchChainAsync({ chainId: base.id });
+      } catch {
+        showNotif('// please switch to Base network', true);
+        return;
+      }
+    }
+
     setModalStep('processing');
     try {
       let hash: string;
@@ -117,7 +130,7 @@ export function CategoryPage({ slug, category, title, subtitle, trustLine1, trus
       setModalStep('error');
       showNotif(msg, true);
     }
-  }, [currentLead, isConnected, selectedToken, writeContractAsync, sendTransactionAsync, showNotif]);
+  }, [currentLead, isConnected, chain, selectedToken, writeContractAsync, sendTransactionAsync, switchChainAsync, showNotif]);
 
   const reveal: LeadReveal | null = currentLead ? revealData[currentLead.id] || null : null;
 
