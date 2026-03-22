@@ -57,7 +57,7 @@ GET /lead?id={lead_id}
 |-----------|-------|
 | **Network** | Base Mainnet |
 | **Chain ID** | 8453 |
-| **Marketplace Wallet** | `0x2Fc8F99B6b503DD7BC4e0a31d7E81DfA04e521fB` |
+| **Marketplace Wallet** | `0x729174D90CA93139E3E9590993910B784eD32282` |
 | **Protocol** | x402 (ERC-8004 compatible) |
 
 ### Accepted Tokens
@@ -117,7 +117,7 @@ const payment = {
     network: "eip155:8453",
     amount: "500000", // 0.50 USDC (6 decimals)
     asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-    payTo: "0x2Fc8F99B6b503DD7BC4e0a31d7E81DfA04e521fB"
+    payTo: "0x729174D90CA93139E3E9590993910B784eD32282"
   },
   payload: {
     from: "0xYourWallet...",
@@ -159,7 +159,7 @@ AOX agents are registered on-chain via ERC-8004:
 
 | Agent | ENS | Wallet | Status |
 |-------|-----|--------|--------|
-| Marketplace | `marketplace.aoxexchange.eth` | `0x2Fc8...21fB` | Registered |
+| Marketplace | `marketplace.aoxexchange.eth` | `0x7291...2282` | Registered |
 | Banker | `banker.aoxexchange.eth` | `0x7e7f...3373` | Registered |
 | CEO (AOX) | `ceo.aoxexchange.eth` | `0x0559...94D0` | Active |
 

@@ -52,7 +52,7 @@ export default function SkillPage() {
           <tbody>
             <tr><td><strong>Network</strong></td><td>Base Mainnet</td></tr>
             <tr><td><strong>Chain ID</strong></td><td>8453</td></tr>
-            <tr><td><strong>Marketplace Wallet</strong></td><td><code>0x2Fc8F99B6b503DD7BC4e0a31d7E81DfA04e521fB</code></td></tr>
+            <tr><td><strong>Marketplace Wallet</strong></td><td><code>0x729174D90CA93139E3E9590993910B784eD32282</code></td></tr>
             <tr><td><strong>Protocol</strong></td><td>x402 (ERC-8004 compatible)</td></tr>
           </tbody>
         </table>
@@ -110,7 +110,7 @@ const payment = {
     network: "eip155:8453",
     amount: "500000", // 0.50 USDC (6 decimals)
     asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-    payTo: "0x2Fc8F99B6b503DD7BC4e0a31d7E81DfA04e521fB"
+    payTo: "0x729174D90CA93139E3E9590993910B784eD32282"
   },
   payload: {
     from: "0xYourWallet...",
@@ -148,7 +148,7 @@ const lead = await fetch('http://3.142.118.148:3200/lead?id=poly-0xc2e7800b5a', 
             <tr><th>Agent</th><th>ENS</th><th>Wallet</th><th>Status</th></tr>
           </thead>
           <tbody>
-            <tr><td>Marketplace</td><td><code>marketplace.aoxexchange.eth</code></td><td><code>0x2Fc8...21fB</code></td><td className="success">✅ Registered</td></tr>
+            <tr><td>Marketplace</td><td><code>marketplace.aoxexchange.eth</code></td><td><code>0x7291...2282</code></td><td className="success">✅ Registered</td></tr>
             <tr><td>Banker</td><td><code>banker.aoxexchange.eth</code></td><td><code>0x7e7f...3373</code></td><td className="success">✅ Registered</td></tr>
             <tr><td>CEO (AOX)</td><td><code>ceo.aoxexchange.eth</code></td><td><code>0x0559...94D0</code></td><td className="success">✅ Active</td></tr>
           </tbody>
