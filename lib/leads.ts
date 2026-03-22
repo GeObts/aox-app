@@ -253,4 +253,37 @@ export const revealData: Record<string, LeadReveal> = {
       { label: 'Listed', value: '2026-03-21 05:00 UTC' },
     ],
   },
+  'token-sent-0x0f7cc3232c': {
+    name: 'SENT Token Details',
+    fields: [
+      { label: 'Token Address', value: '0x0f7cc3232cd7baf5c7ee55ee8c24789d80f67b5d' },
+      { label: 'FDV', value: '$80,712' },
+      { label: '24h Volume', value: '$2,630' },
+      { label: 'Transactions', value: '84' },
+      { label: 'Unique Buyers', value: '12' },
+      { label: 'Liquidity Reserve', value: '$155,631' },
+      { label: 'DEX', value: 'Uniswap V2' },
+      { label: 'Chain', value: 'Base' },
+      { label: 'Pool Created', value: '2026-03-21' },
+      { label: 'Data Source', value: 'GeckoTerminal API (verified)' },
+    ],
+  },
+
 };
+,
+    { label: 'FDV', value: '$80,712' },
+    { label: '24h Volume', value: '$2,630' },
+    { label: 'Transactions', value: '84' },
+    { label: 'Unique Buyers', value: '12' },
+    { label: 'Liquidity Reserve', value: '$155,631' },
+    { label: 'DEX', value: 'Uniswap V2' },
+    { label: 'Chain', value: 'Base' },
+    { label: 'Pool Created', value: '2026-03-21' },
+    { label: 'Data Source', value: 'GeckoTerminal API (verified)' },
+  ],
+};
+
+// Update revealData to include SENT
+if (!revealData['token-sent-0x0f7cc3232c']) {
+  revealData['token-sent-0x0f7cc3232c'] = sentReveal;
+}
