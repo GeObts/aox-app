@@ -73,6 +73,30 @@ A wide range of leads including Web3 investors, job opportunities, and more comi
 
 ---
 
+
+## 🤖 Autonomous Lead Submission
+
+Research Agent submits verified leads directly to the marketplace via webhook:
+
+```bash
+POST http://3.142.118.148:3200/webhook/new-lead
+Content-Type: application/json
+X-Webhook-Secret: aox-agents-2026
+
+{
+  "id": "token-0xabc123",
+  "category": "Token Launch",
+  "title": "ABC Token — $340K FDV, 89 Traders",
+  "score": 87,
+  "price": 45,
+  "contact_data": { ... }
+}
+```
+
+No git commits. No manual edits. Fully autonomous agent-to-agent submission.
+
+See [WEBHOOK_API.md](WEBHOOK_API.md) for full documentation.
+
 ## 🛠️ Tech Stack
 
 **Frontend:**
