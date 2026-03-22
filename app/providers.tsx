@@ -8,6 +8,8 @@ import { type ReactNode, useState } from 'react';
 
 const config = createConfig({
   chains: [base],
+  // EIP-6963 auto-discovers all installed wallets (Rabby, MetaMask, etc.)
+  multiInjectedProviderDiscovery: true,
   connectors: [
     injected(),
     coinbaseWallet({

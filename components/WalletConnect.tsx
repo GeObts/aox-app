@@ -6,9 +6,14 @@ import { base } from 'wagmi/chains';
 
 const WALLET_LABELS: Record<string, string> = {
   'MetaMask': 'METAMASK',
+  'Rabby Wallet': 'RABBY',
+  'Rabby': 'RABBY',
+  'Rainbow': 'RAINBOW',
   'Injected': 'BROWSER WALLET',
   'Coinbase Wallet': 'COINBASE',
   'WalletConnect': 'WALLETCONNECT',
+  'Phantom': 'PHANTOM',
+  'Trust Wallet': 'TRUST',
 };
 
 export function WalletConnect() {
@@ -83,15 +88,23 @@ export function WalletConnect() {
       {open && (
         <div className="wallet-dropdown">
           <div className="wallet-dropdown-title">// SELECT WALLET</div>
-          {connectors.map((connector, i) => (
-            <button
-              key={connector.uid}
-              className="wallet-dropdown-item"
-              onClick={() => handleConnect(i)}
-            >
-              {WALLET_LABELS[connector.name] || connector.name.toUpperCase()}
-            </button>
-          ))}
+          {connectors
+            .filter((c, i, arr) => {
+              // Deduplicate: keep first connector per name (EIP-6963 versions take priority)
+              return arr.findIndex((x) => x.name === c.name) === i;
+            })
+            .map((connector) => (
+              <button
+                key={connector.uid}
+                className="wallet-dropdown-item"
+                onClick={() => {
+                  connect({ connector, chainId: base.id });
+                  setOpen(false);
+                }}
+              >
+                {WALLET_LABELS[connector.name] || connector.name.toUpperCase()}
+              </button>
+            ))}
         </div>
       )}
     </div>
