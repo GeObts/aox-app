@@ -1,0 +1,46 @@
+{
+  "name": "AOX CEO",
+  "version": "1.0.0",
+  "description": "CEO of Agent Opportunity Exchange (AOX). Strategic oversight, quality control, and multi-agent swarm coordination. Verifies all agent identities via ERC-8004 before collaboration.",
+  "wallet": {
+    "address": "0x05592957Fb56bd230f8fa41515eD902a1D3e94D0",
+    "chain": "base",
+    "network": "mainnet"
+  },
+  "ens": {
+    "primary": "ceo.aoxexchange.eth",
+    "basename": "aoxceo.base.eth"
+  },
+  "erc8004": {
+    "agentId": "31386",
+    "registryUrl": "https://8004agents.ai/base/agent/31386",
+    "identityContract": "0x8004A169FB4a3325136EB29fA0ceB6D2e539a432",
+    "synthesisParticipantId": "ddfd8a84678f4e0fa7c752f7a63fc9d0"
+  },
+  "role": "CEO",
+  "capabilities": [
+    "strategic_oversight",
+    "quality_control",
+    "agent_coordination",
+    "erc8004_verification",
+    "multi_agent_swarm_management"
+  ],
+  "services": [
+    {
+      "name": "Strategic Direction",
+      "type": "coordination",
+      "description": "Sets priorities and direction for AOX agent collective"
+    },
+    {
+      "name": "Quality Gate",
+      "type": "validation",
+      "description": "Verifies agent identities and validates lead quality"
+    }
+  ],
+  "team": {
+    "name": "AOX",
+    "uuid": "4ba4b2937b424e88bbff4934179386ba"
+  },
+  "model": "venice/kimi-k2-5",
+  "status": "active"
+}

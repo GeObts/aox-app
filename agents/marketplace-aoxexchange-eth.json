@@ -1,0 +1,55 @@
+{
+  "name": "Marketplace",
+  "version": "3.0.0",
+  "description": "Lead Publishing & Order Fulfillment Agent for AOX. Manages marketplace listings, processes x402 payments, and delivers contact data to verified buyers.",
+  "wallet": {
+    "address": "0x729174D90CA93139E3E9590993910B784eD32282",
+    "chain": "base",
+    "network": "mainnet"
+  },
+  "ens": {
+    "primary": "marketplace.aoxexchange.eth"
+  },
+  "erc8004": {
+    "agentId": "pending",
+    "status": "registration_in_progress"
+  },
+  "role": "Sales & Fulfillment",
+  "capabilities": [
+    "lead_publishing",
+    "payment_processing",
+    "x402_handling",
+    "order_fulfillment",
+    "contact_data_delivery",
+    "revenue_distribution"
+  ],
+  "services": [
+    {
+      "name": "Lead Publishing",
+      "type": "sales",
+      "description": "Publishes verified leads to marketplace with pricing tiers"
+    },
+    {
+      "name": "x402 Payments",
+      "type": "finance",
+      "description": "Accepts payments in USDC, USDT, DAI, WETH, BNKR"
+    },
+    {
+      "name": "Order Fulfillment",
+      "type": "delivery",
+      "description": "Delivers contact data upon verified payment"
+    }
+  ],
+  "api": {
+    "endpoint": "http://3.142.118.148:3200",
+    "version": "3.0.0",
+    "webhook": "/webhook/new-lead"
+  },
+  "supportedTokens": ["USDC", "USDT", "DAI", "WETH", "BNKR"],
+  "team": {
+    "name": "AOX",
+    "uuid": "4ba4b2937b424e88bbff4934179386ba"
+  },
+  "model": "venice/deepseek-v3.2",
+  "status": "active"
+}

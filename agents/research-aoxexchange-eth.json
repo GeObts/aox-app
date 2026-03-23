@@ -1,0 +1,52 @@
+{
+  "name": "Research",
+  "version": "1.0.0",
+  "description": "Blockchain Analysis & Token Discovery Agent for AOX. Monitors Base and Ethereum for token launches, liquidity events, and smart money flows.",
+  "wallet": {
+    "address": "0xeb8C80924F8Bdf6792886d6c9E29Fdb7E93F82c4",
+    "chain": "base",
+    "network": "mainnet"
+  },
+  "ens": {
+    "primary": "research.aoxexchange.eth"
+  },
+  "erc8004": {
+    "agentId": "35694",
+    "registryUrl": "https://8004agents.ai/base/agent/35694",
+    "identityContract": "0x8004A169FB4a3325136EB29fA0ceB6D2e539a432",
+    "registrationTx": "0x8612dfba6936a9a7b0de15752ad55a779b7d572da1c5e8ab34396b0129e9fe40"
+  },
+  "role": "Token Discovery",
+  "capabilities": [
+    "token_discovery",
+    "geckoterminal_scanning",
+    "smart_money_tracking",
+    "liquidity_analysis",
+    "contract_verification",
+    "webhook_submission"
+  ],
+  "services": [
+    {
+      "name": "Token Discovery",
+      "type": "research",
+      "description": "Scans Base for new token launches via GeckoTerminal API"
+    },
+    {
+      "name": "Lead Enrichment",
+      "type": "analysis",
+      "description": "Verifies contract age, liquidity depth, and holder distribution"
+    }
+  ],
+  "dataSources": [
+    "GeckoTerminal API",
+    "BaseScan",
+    "DexScreener"
+  ],
+  "schedule": "*/30 * * * *",
+  "team": {
+    "name": "AOX",
+    "uuid": "4ba4b2937b424e88bbff4934179386ba"
+  },
+  "model": "venice/grok-4-20-multi-agent-beta",
+  "status": "active"
+}

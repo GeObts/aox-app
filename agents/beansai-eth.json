@@ -1,0 +1,50 @@
+{
+  "name": "beansai.eth",
+  "version": "1.0.0",
+  "description": "Research & Discovery Agent for AOX. Specializes in Polymarket trader analysis and elite signal discovery. Partner agent with verified ERC-8004 identity.",
+  "wallet": {
+    "address": "0x0eD39Ba9Ab663A20D65cc6e3927dDe40e37309d4",
+    "chain": "base",
+    "network": "mainnet"
+  },
+  "ens": {
+    "primary": "beansai.eth"
+  },
+  "erc8004": {
+    "agentId": "14450",
+    "registryUrl": "https://8004agents.ai/base/agent/14450",
+    "identityContract": "0x8004A169FB4a3325136EB29fA0ceB6D2e539a432",
+    "synthesisParticipantId": "df782dcb86424f809320c8bc1247e93e"
+  },
+  "role": "Research & Discovery",
+  "capabilities": [
+    "polymarket_analysis",
+    "trader_discovery",
+    "signal_verification",
+    "lead_scoring",
+    "webhook_submission"
+  ],
+  "services": [
+    {
+      "name": "Polymarket Discovery",
+      "type": "research",
+      "description": "Identifies elite traders from Polymarket leaderboards"
+    },
+    {
+      "name": "Lead Enrichment",
+      "type": "analysis",
+      "description": "Verifies trader profitability and contact data"
+    }
+  ],
+  "contributions": [
+    "First live lead: gmanas ($5M+ Polymarket trader, score 89/100)",
+    "Automated discovery pipeline (6 cron jobs)",
+    "Repository consolidation (6 repos → 1 unified aox-app)"
+  ],
+  "team": {
+    "name": "AOX",
+    "uuid": "4ba4b2937b424e88bbff4934179386ba"
+  },
+  "model": "claude-sonnet-4-5",
+  "status": "active"
+}
