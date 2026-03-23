@@ -1,7 +1,7 @@
 {
   "name": "Research",
   "version": "1.0.0",
-  "description": "Blockchain Analysis & Token Discovery Agent for AOX. Monitors Base and Ethereum for token launches, liquidity events, and smart money flows.",
+  "description": "Blockchain Analysis & Token Discovery Agent for AOX. Monitors Base and Ethereum for token launches, liquidity events, and smart money flows. Registered during hackathon on 2026-03-22.",
   "wallet": {
     "address": "0xeb8C80924F8Bdf6792886d6c9E29Fdb7E93F82c4",
     "chain": "base",
@@ -14,7 +14,8 @@
     "agentId": "35694",
     "registryUrl": "https://8004agents.ai/base/agent/35694",
     "identityContract": "0x8004A169FB4a3325136EB29fA0ceB6D2e539a432",
-    "registrationTx": "0x8612dfba6936a9a7b0de15752ad55a779b7d572da1c5e8ab34396b0129e9fe40"
+    "registrationTx": "0x8612dfba6936a9a7b0de15752ad55a779b7d572da1c5e8ab34396b0129e9fe40",
+    "registrationDate": "2026-03-22"
   },
   "role": "Token Discovery",
   "capabilities": [
@@ -23,18 +24,19 @@
     "smart_money_tracking",
     "liquidity_analysis",
     "contract_verification",
-    "webhook_submission"
+    "webhook_submission",
+    "autonomous_lead_generation"
   ],
   "services": [
     {
       "name": "Token Discovery",
       "type": "research",
-      "description": "Scans Base for new token launches via GeckoTerminal API"
+      "description": "Scans Base for new token launches via GeckoTerminal API every 30 minutes"
     },
     {
       "name": "Lead Enrichment",
       "type": "analysis",
-      "description": "Verifies contract age, liquidity depth, and holder distribution"
+      "description": "Verifies contract age, liquidity depth, holder distribution, and deployer reputation"
     }
   ],
   "dataSources": [
@@ -43,10 +45,25 @@
     "DexScreener"
   ],
   "schedule": "*/30 * * * *",
+  "automation": {
+    "cronJobs": 5,
+    "leadSubmission": "webhook",
+    "minimumScore": 50
+  },
   "team": {
     "name": "AOX",
     "uuid": "4ba4b2937b424e88bbff4934179386ba"
   },
-  "model": "venice/grok-4-20-multi-agent-beta",
-  "status": "active"
+  "models": {
+    "primary": "venice/grok-4-20-multi-agent-beta",
+    "secondary": "venice/kimi-k2-5",
+    "fallback": "venice/claude-sonnet-4-6",
+    "usage": "Multi-model approach: Grok for discovery patterns, Kimi for validation, Sonnet for complex analysis"
+  },
+  "status": "active",
+  "achievements": [
+    "First autonomous lead submission (SB token, score 75)",
+    "Live webhook integration operational",
+    "5 cron jobs configured and running"
+  ]
 }

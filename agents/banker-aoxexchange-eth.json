@@ -1,11 +1,20 @@
 {
   "name": "Banker",
   "version": "1.0.0",
-  "description": "Treasury Management & Payment Processing Agent for AOX. Handles multi-token treasury, x402 payment verification, and DeFi yield strategies.",
+  "description": "Treasury Management & Payment Processing Agent for AOX. Handles multi-token treasury, x402 payment verification, and DeFi yield strategies. Wallet upgraded due to security incident.",
   "wallet": {
-    "address": "0x6350B793688221c75cfB438547B9CA47f5b0D4f1",
-    "chain": "base",
-    "network": "mainnet"
+    "current": {
+      "address": "0x6350B793688221c75cfB438547B9CA47f5b0D4f1",
+      "chain": "base",
+      "network": "mainnet",
+      "active_since": "2026-03-22"
+    },
+    "previous": {
+      "address": "0x7e7f825248Ae530610F34a5deB9Bc423f6d63373",
+      "status": "compromised",
+      "compromised_date": "2026-03-22",
+      "reason": "Private key leak - funds drained"
+    }
   },
   "ens": {
     "primary": "banker.aoxexchange.eth"
@@ -13,7 +22,8 @@
   "erc8004": {
     "agentId": "33162",
     "registryUrl": "https://8004agents.ai/base/agent/33162",
-    "identityContract": "0x8004A169FB4a3325136EB29fA0ceB6D2e539a432"
+    "identityContract": "0x8004A169FB4a3325136EB29fA0ceB6D2e539a432",
+    "notes": "Agent ID transferred to new wallet after compromise"
   },
   "role": "Treasury & Payments",
   "capabilities": [
@@ -22,28 +32,44 @@
     "multi_token_treasury",
     "defi_yield_strategies",
     "lido_integration",
-    "uniswap_swaps"
+    "uniswap_swaps",
+    "revenue_distribution"
   ],
   "services": [
     {
       "name": "Payment Verification",
       "type": "finance",
-      "description": "Verifies x402 micropayments on Base mainnet"
+      "description": "Verifies x402 micropayments on Base mainnet (5 tokens supported)"
     },
     {
       "name": "Treasury Management",
       "type": "operations",
-      "description": "Manages USDC, wstETH, and multi-token allocations"
+      "description": "Manages USDC, wstETH, ETH allocations with yield optimization"
+    },
+    {
+      "name": "Revenue Distribution",
+      "type": "finance",
+      "description": "Distributes marketplace earnings (25% beansai.eth, 75% Banker)"
     }
   ],
   "treasury": {
     "contract": "0xeB747c50eD3b327480228E18ffD4bd9Cf8646B47",
-    "tokens": ["USDC", "wstETH", "ETH"]
+    "tokens": ["USDC", "wstETH", "ETH"],
+    "safety_rules": ["$2 ETH gas reserve minimum", "Never swap ETH (gas reserve)", "$10 minimum distribution"]
   },
   "team": {
     "name": "AOX",
     "uuid": "4ba4b2937b424e88bbff4934179386ba"
   },
-  "model": "venice/deepseek-v3.2",
-  "status": "active"
+  "models": {
+    "primary": "venice/deepseek-v3.2",
+    "usage": "Efficient model for treasury operations and calculations"
+  },
+  "status": "active",
+  "security_incident": {
+    "date": "2026-03-22",
+    "type": "wallet_compromise",
+    "resolution": "New wallet deployed, ERC-8004 registration maintained",
+    "lessons": "Enhanced key management protocols implemented"
+  }
 }

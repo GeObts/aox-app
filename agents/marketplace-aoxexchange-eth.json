@@ -1,18 +1,29 @@
 {
   "name": "Marketplace",
   "version": "3.0.0",
-  "description": "Lead Publishing & Order Fulfillment Agent for AOX. Manages marketplace listings, processes x402 payments, and delivers contact data to verified buyers.",
+  "description": "Lead Publishing & Order Fulfillment Agent for AOX. Manages marketplace listings, processes x402 payments, and delivers contact data to verified buyers. Wallet upgraded due to security incident.",
   "wallet": {
-    "address": "0x729174D90CA93139E3E9590993910B784eD32282",
-    "chain": "base",
-    "network": "mainnet"
+    "current": {
+      "address": "0x729174D90CA93139E3E9590993910B784eD32282",
+      "chain": "base",
+      "network": "mainnet",
+      "active_since": "2026-03-22"
+    },
+    "previous": {
+      "address": "0x2Fc8F99B6b503DD7BC4e0a31d7E81DfA04e521fB",
+      "status": "compromised",
+      "compromised_date": "2026-03-22",
+      "reason": "Private key leak in logs - funds drained"
+    }
   },
   "ens": {
-    "primary": "marketplace.aoxexchange.eth"
+    "primary": "marketplace.aoxexchange.eth",
+    "status": "pending_registration"
   },
   "erc8004": {
     "agentId": "pending",
-    "status": "registration_in_progress"
+    "status": "registration_in_progress",
+    "notes": "New wallet registration planned after security incident resolution"
   },
   "role": "Sales & Fulfillment",
   "capabilities": [
@@ -21,35 +32,79 @@
     "x402_handling",
     "order_fulfillment",
     "contact_data_delivery",
-    "revenue_distribution"
+    "revenue_distribution",
+    "shared_workspace_processing"
   ],
   "services": [
     {
       "name": "Lead Publishing",
       "type": "sales",
-      "description": "Publishes verified leads to marketplace with pricing tiers"
+      "description": "Publishes verified leads to marketplace with dynamic pricing tiers"
     },
     {
       "name": "x402 Payments",
       "type": "finance",
-      "description": "Accepts payments in USDC, USDT, DAI, WETH, BNKR"
+      "description": "Accepts payments in USDC, USDT, DAI, WETH, BNKR via x402 protocol"
     },
     {
       "name": "Order Fulfillment",
       "type": "delivery",
-      "description": "Delivers contact data upon verified payment"
+      "description": "Delivers contact data upon verified on-chain payment"
+    },
+    {
+      "name": "Shared Workspace Processing",
+      "type": "integration",
+      "description": "Processes leads from /tmp/aox-shared/incoming/marketplace/ every 15 minutes"
     }
   ],
   "api": {
     "endpoint": "http://3.142.118.148:3200",
     "version": "3.0.0",
-    "webhook": "/webhook/new-lead"
+    "webhook": "/webhook/new-lead",
+    "health": "/health",
+    "leads": "/leads"
   },
-  "supportedTokens": ["USDC", "USDT", "DAI", "WETH", "BNKR"],
+  "supportedTokens": [
+    {
+      "symbol": "USDC",
+      "address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "decimals": 6
+    },
+    {
+      "symbol": "USDT",
+      "address": "0xfde4c37c24e0eacca0afab458925687ed3353a2",
+      "decimals": 6
+    },
+    {
+      "symbol": "DAI",
+      "address": "0x50c5725949a5f04c89c60f1e98e0b9fb8c066a1",
+      "decimals": 18
+    },
+    {
+      "symbol": "WETH",
+      "address": "0x4200000000000000000000000000000000000006",
+      "decimals": 18
+    },
+    {
+      "symbol": "BNKR",
+      "address": "0x22af5B618c6712e91dc835721D912bD9C0bf38b9",
+      "decimals": 18
+    }
+  ],
   "team": {
     "name": "AOX",
     "uuid": "4ba4b2937b424e88bbff4934179386ba"
   },
-  "model": "venice/deepseek-v3.2",
-  "status": "active"
+  "models": {
+    "primary": "venice/deepseek-v3.2",
+    "fallback": "venice/kimi-k2-5",
+    "usage": "DeepSeek for processing efficiency, Kimi for complex validation"
+  },
+  "status": "active",
+  "security_incident": {
+    "date": "2026-03-22",
+    "type": "wallet_compromise",
+    "resolution": "New wallet deployed, all code updated, ERC-8004 re-registration in progress",
+    "lessons": "Private key scanning implemented, .env security hardened"
+  }
 }

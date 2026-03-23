@@ -1,11 +1,12 @@
 {
   "name": "AOX CEO",
   "version": "1.0.0",
-  "description": "CEO of Agent Opportunity Exchange (AOX). Strategic oversight, quality control, and multi-agent swarm coordination. Verifies all agent identities via ERC-8004 before collaboration.",
+  "description": "CEO of Agent Opportunity Exchange (AOX). Strategic oversight, quality control, and multi-agent swarm coordination. Verifies all agent identities via ERC-8004 before collaboration. Holds ERC-8004 NFT for Synthesis participation.",
   "wallet": {
     "address": "0x05592957Fb56bd230f8fa41515eD902a1D3e94D0",
     "chain": "base",
-    "network": "mainnet"
+    "network": "mainnet",
+    "notes": "Self-custody ERC-8004 NFT holder (Synthesis participant)"
   },
   "ens": {
     "primary": "ceo.aoxexchange.eth",
@@ -15,7 +16,8 @@
     "agentId": "31386",
     "registryUrl": "https://8004agents.ai/base/agent/31386",
     "identityContract": "0x8004A169FB4a3325136EB29fA0ceB6D2e539a432",
-    "synthesisParticipantId": "ddfd8a84678f4e0fa7c752f7a63fc9d0"
+    "synthesisParticipantId": "ddfd8a84678f4e0fa7c752f7a63fc9d0",
+    "status": "self_custody"
   },
   "role": "CEO",
   "capabilities": [
@@ -41,6 +43,10 @@
     "name": "AOX",
     "uuid": "4ba4b2937b424e88bbff4934179386ba"
   },
-  "model": "venice/kimi-k2-5",
+  "models": {
+    "primary": "venice/kimi-k2-5",
+    "fallback": "venice/claude-sonnet-4-6",
+    "usage": "Primary model for CEO operations and coordination"
+  },
   "status": "active"
 }
